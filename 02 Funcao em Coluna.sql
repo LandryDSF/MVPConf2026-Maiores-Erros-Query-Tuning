@@ -85,14 +85,14 @@ WHERE OrderDate >= '20110607' and OrderDate < '20110608'
 SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
 FROM dbo.SalesOrderHeader
 WHERE year(OrderDate) = 2011
--- 1.566 linhas
--- Index Scan: Table 'SalesOrderHeader'. Scan count 1, logical reads 181
+-- 805.107 linhas
+-- Index Scan: Table 'SalesOrderHeader'. Scan count 7, logical reads 74526
 
 SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
 FROM dbo.SalesOrderHeader
 WHERE OrderDate >= '20110101' and OrderDate < '20120101'
--- 1.566 linhas
--- Index Seek: Table 'SalesOrderHeader'. Scan count 1, logical reads 11
+-- 805.107 linhas
+-- Index Seek: Table 'SalesOrderHeader'. Scan count 1, logical reads 3792
 
 DROP INDEX dbo.SalesOrderHeader.IX_SalesOrderHeader_OrderDate
 
