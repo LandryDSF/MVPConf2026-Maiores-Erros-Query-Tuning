@@ -25,7 +25,7 @@ set statistics io on
 -- DROP INDEX dbo.Customer.IX_Customer_FirstName
 CREATE INDEX IX_Customer_FirstName ON dbo.Customer (FirstName)
 INCLUDE (CustomerID, LastName)
--- WITH DROP_EXISTING
+
 
 
 
@@ -35,19 +35,29 @@ INCLUDE (CustomerID, LastName)
 -- Função LEFT()
 SELECT CustomerID, FirstName, LastName
 FROM dbo.Customer WHERE left(FirstName,1) = 'A'
--- Clustered Index Scan = Table Scan -> Table 'Customer'. Scan count 7, logical reads 252971 x 8Kb = 2.023.768 Kb = 1.976 MB
+-- Clustered Index Scan = Table Scan -> Table 'Customer'. Scan count 7, logical reads 243983 x 8Kb = 1.951.864 Kb = 1,86 GB
 -- Index Scan ------------------------> Table 'Customer'. Scan count 1, logical reads 4589 x 8kb = 36.712 Kb = 35 MB
 
 -- Trocando por LIKE
 SELECT CustomerID, FirstName, LastName --, DataCadastro
-FROM dbo.Customer WHERE FirstName like 'G%'
--- Index Seek: Table 'Customer'. Scan count 1, logical reads 7 x 8kb = 56 KB
+FROM dbo.Customer WHERE FirstName like 'A%'
+-- Index Seek: Table 'Customer'. Scan count 1, logical reads 489 x 8kb = 3.912 KB
 
 SELECT CustomerID, FirstName, LastName
-FROM dbo.Customer WHERE FirstName like '%G%'
--- Index Scan ------------------------> Table 'Customer'. Scan count 1, logical reads 4589 x 8kb = 36.712 Kb = 35 MB
+FROM dbo.Customer WHERE FirstName like '%A%'
+-- Index Scan: Table 'Customer'. Scan count 1, logical reads 4589 x 8kb = 36.712 Kb = 35 MB
+
+-- UPPER()
+SELECT CustomerID, FirstName, LastName
+FROM dbo.Customer WHERE upper(FirstName) = 'LOLA'
+-- Index Scan: Table 'Customer'. Scan count 1, logical reads 4589 x 8kb = 36.712 kb = 35 MB
+
+SELECT CustomerID, FirstName, LastName
+FROM dbo.Customer WHERE FirstName = 'Lola'
+-- Index Seek: Table 'Customer'. Scan count 1, logical reads 4 x 8kb = 32 kb
 
 
+DROP INDEX dbo.Customer.IX_Customer_FirstName
 
 /***********************************************************
  - Uso de Função em coluna: CONVERT
@@ -61,38 +71,38 @@ INCLUDE (SalesOrderID, CustomerID, TotalDue, ShipDate)
 SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
 FROM dbo.SalesOrderHeader
 WHERE OrderDate = '20110531'
--- Zero linhas
+-- 1 linha
 
 SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
 FROM dbo.SalesOrderHeader
 WHERE convert(varchar(8),OrderDate,112) = '20110531'
 -- 21.543 linhas
--- Index Scan -> Table 'SalesOrderHeader'. Scan count 7, logical reads 74778 x 8kb = 598224 Kb = 584 MB
-
-
-
-
-
-
-
-SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
-FROM dbo.SalesOrderHeader
-WHERE OrderDate >= '20110607' and OrderDate < '20110608'
--- 43 linhas
--- Table 'SalesOrderHeader'. Scan count 1, logical reads 2
-
+-- Index Scan -> Table 'SalesOrderHeader'. Scan count 7, logical reads 74.474 x 8kb = 595.792 Kb = 581 MB
 
 SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
 FROM dbo.SalesOrderHeader
 WHERE year(OrderDate) = 2011
 -- 805.107 linhas
--- Index Scan: Table 'SalesOrderHeader'. Scan count 7, logical reads 74526
+-- Index Scan: Table 'SalesOrderHeader'. Scan count 7, logical reads 74.786 x 8kb = 598.288 kb = 584 MB
 
+
+
+
+
+-- Reescrita
+SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
+FROM dbo.SalesOrderHeader
+WHERE OrderDate >= '20110531' and OrderDate < '20110601'
+-- 43 linhas
+-- Table 'SalesOrderHeader'. Scan count 1, logical reads 11 x 8 kb = 88 kb
+
+
+-- Reescrita
 SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
 FROM dbo.SalesOrderHeader
 WHERE OrderDate >= '20110101' and OrderDate < '20120101'
 -- 805.107 linhas
--- Index Seek: Table 'SalesOrderHeader'. Scan count 1, logical reads 3792
+-- Index Seek: Table 'SalesOrderHeader'. Scan count 1, logical reads 3792 x 8kb = 30.336 kb = 29 MB
 
 DROP INDEX dbo.SalesOrderHeader.IX_SalesOrderHeader_OrderDate
 
