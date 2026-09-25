@@ -70,14 +70,14 @@ INCLUDE (SalesOrderID, CustomerID, TotalDue, ShipDate)
 
 SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
 FROM dbo.SalesOrderHeader
-WHERE OrderDate = '20110531'
--- 1 linha
+WHERE OrderDate = '20110801'
+-- zero linha
 
 SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
 FROM dbo.SalesOrderHeader
-WHERE convert(varchar(8),OrderDate,112) = '20110531'
--- 21.543 linhas
--- Index Scan -> Table 'SalesOrderHeader'. Scan count 7, logical reads 74.474 x 8kb = 595.792 Kb = 581 MB
+WHERE convert(varchar(8),OrderDate,112) = '20110801'
+-- 32.064 linhas
+-- Index Scan -> Table 'SalesOrderHeader'. Scan count 7, logical reads 74.471 x 8kb = 595.768 Kb = 581 MB
 
 SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
 FROM dbo.SalesOrderHeader
@@ -92,9 +92,9 @@ WHERE year(OrderDate) = 2011
 -- Reescrita
 SELECT SalesOrderID, CustomerID, TotalDue, OrderDate, ShipDate
 FROM dbo.SalesOrderHeader
-WHERE OrderDate >= '20110531' and OrderDate < '20110601'
--- 43 linhas
--- Table 'SalesOrderHeader'. Scan count 1, logical reads 11 x 8 kb = 88 kb
+WHERE OrderDate >= '20110801' and OrderDate < '20110802'
+-- 32.064 linhas
+-- Table 'SalesOrderHeader'. Scan count 1, logical reads 154 x 8 kb = 1.232 kb
 
 
 -- Reescrita
